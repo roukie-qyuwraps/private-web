@@ -27,6 +27,19 @@
   </div>
 
   <div class="card">
+  <h3>📅 Agenda</h3>
+
+  <input id="agendaText" placeholder="Judul agenda" style="width:100%;padding:8px;">
+  <br><br>
+
+  <input type="datetime-local" id="agendaTime" style="width:100%;padding:8px;">
+
+  <button onclick="addAgenda()">Tambah</button>
+
+  <ul id="agendaList"></ul>
+</div>
+
+  <div class="card">
     <button class="logout" onclick="logout()">Logout</button>
   </div>
 
