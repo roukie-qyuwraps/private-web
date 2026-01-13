@@ -1,13 +1,66 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <title>My Private Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
 <body>
-<h1>Selamat Datang</h1>
-<p>Ini web pribadi saya.</p>
+
+<header>
+  Dashboard Pribadi
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h3>📊 Status Hari Ini</h3>
+    <p id="date"></p>
+    <p>Fokus: Tenang, konsisten, pelan tapi jalan.</p>
+  </div>
+
+  <div class="card">
+    <h3>📓 Jurnal Harian</h3>
+    <textarea id="journal" placeholder="Tulis isi pikiran kamu di sini..."></textarea>
+    <button onclick="saveJournal()">Simpan</button>
+    <p id="saved"></p>
+  </div>
+
+  <div class="card">
+    <button class="logout" onclick="logout()">Logout</button>
+  </div>
+
+</div>
 
 <script>
   if (sessionStorage.getItem("auth") !== "true") {
     window.location.href = "index.html";
   }
+
+  document.getElementById("date").innerText =
+    new Date().toLocaleDateString("id-ID", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
+
+  document.getElementById("journal").value =
+    localStorage.getItem("journal") || "";
+
+  function saveJournal() {
+    localStorage.setItem(
+      "journal",
+      document.getElementById("journal").value
+    );
+    document.getElementById("saved").innerText = "Tersimpan ✔";
+  }
+
+  function logout() {
+    sessionStorage.clear();
+    window.location.href = "index.html";
+  }
 </script>
+
 </body>
 </html>
