@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Private Access</title>
+</head>
+<body>
+  <h2>Private Page</h2>
+  <input type="password" id="password" placeholder="Password">
+  <button onclick="login()">Masuk</button>
+  <p id="msg"></p>
+
+<script>
+function login() {
+  const pass = document.getElementById("password").value;
+  if (pass === "gantipasswordmu123") {
+    sessionStorage.setItem("auth", "true");
+    window.location.href = "main.html";
+  } else {
+    document.getElementById("msg").innerText = "Password salah";
+  }
+}
+</script>
+</body>
+</html>
