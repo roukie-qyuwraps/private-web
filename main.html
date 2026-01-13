@@ -73,6 +73,54 @@
     sessionStorage.clear();
     window.location.href = "index.html";
   }
+
+  let agendas = JSON.parse(localStorage.getItem("agendas")) || [];
+
+function renderAgenda() {
+  const list = document.getElementById("agendaList");
+  list.innerHTML = "";
+
+  agendas.forEach((a, i) => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      ${a.text}<br>
+      <small>${new Date(a.time).toLocaleString("id-ID")}</small><br>
+      <button onclick="setAlarm('${a.text}','${a.time}')">⏰ Set Alarm</button>
+      <button onclick="deleteAgenda(${i})">❌</button>
+    `;
+    list.appendChild(li);
+  });
+
+  localStorage.setItem("agendas", JSON.stringify(agendas));
+}
+
+function addAgenda() {
+  const text = document.getElementById("agendaText").value;
+  const time = document.getElementById("agendaTime").value;
+  if (!text || !time) return;
+
+  agendas.push({ text, time });
+  renderAgenda();
+
+  document.getElementById("agendaText").value = "";
+  document.getElementById("agendaTime").value = "";
+}
+
+function deleteAgenda(i) {
+  agendas.splice(i, 1);
+  renderAgenda();
+}
+
+function setAlarm(title, time) {
+  const start = new Date(time).toISOString().replace(/-|:|\.\d+/g,"");
+  const end = start;
+
+  const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${start}/${end}`;
+
+  window.open(url, "_blank");
+}
+
+renderAgenda();
 </script>
 
 </body>
