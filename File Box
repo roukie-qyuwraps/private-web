@@ -1,9 +1,0 @@
-<div class="card col-6">
-  <h3>📁 File Box</h3>
-
-  <input id="fileName" placeholder="Nama file / folder">
-  <input id="fileLink" placeholder="Link (Drive / lokal)">
-  <button onclick="addFile()">Tambah</button>
-
-  <ul id="fileList"></ul>
-</div>
