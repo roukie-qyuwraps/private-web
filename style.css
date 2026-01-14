@@ -6,7 +6,7 @@
 body {
   margin: 0;
   font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont;
-  background: #f4f1ed; /* krem lembut */
+  background: #f4f1ed;
   color: #2c2a29;
 }
 
@@ -24,7 +24,7 @@ body {
   .container { grid-template-columns: 1fr; }
 }
 
-/* CARD ELEGAN */
+/* CARD */
 .card {
   background: #ffffff;
   border-radius: 16px;
@@ -71,9 +71,9 @@ input:focus, textarea:focus, select:focus {
   font-size: 14px;
 }
 
-/* BUTTON ELEGAN */
+/* BUTTON */
 button {
-  background: #b89f7c; /* cokelat gold */
+  background: #b89f7c;
   color: #ffffff;
   border: none;
   border-radius: 12px;
