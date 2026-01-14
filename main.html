@@ -1,167 +1,187 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <title>My Private Dashboard</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Personal</title>
+<link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<header>
-  Dashboard Pribadi
-</header>
-
-<div class="container">
-
-  <div class="card col-6">
-    <h3>Status Hari Ini</h3>
-    <!-- status -->
-  </div>
-
-  <div class="card col-6">
-    <h3>Agenda</h3>
-    <!-- agenda -->
-  </div>
-
-  <div class="card col-4">
-    <h3>Jurnal</h3>
-    <!-- jurnal -->
-  </div>
-
-  <div class="card col-4">
-    <h3>Ringkasan</h3>
-    <!-- weekly -->
-  </div>
-
-  <div class="card col-4">
-    <h3>Catatan</h3>
-    <!-- bebas -->
-  </div>
-
-  <div class="card col-6">
-  <h3>📁 File Box</h3>
-
-  <input id="fileName" placeholder="Nama file / folder">
-  <input id="fileLink" placeholder="Link (Drive / lokal)">
-  <button onclick="addFile()">Tambah</button>
-
-  <ul id="fileList"></ul>
-
-    <div class="card col-6">
-  <h3>📁 File Box</h3>
-
-  <button onclick="addBox()">➕ Tambah Box</button>
-
-  <div id="fileList"></div>
+<!-- LOGIN SIMPLE -->
+<div id="loginDiv">
+  <h2>Login</h2>
+  <input type="password" id="passwordInput" placeholder="Masukkan password">
+  <button onclick="checkPassword()">Login</button>
+  <p id="loginMsg"></p>
 </div>
-  
+
+<!-- MAIN DASHBOARD -->
+<div id="mainDiv" style="display:none;">
+  <div class="container">
+
+    <!-- STATUS HARI INI -->
+    <div class="card col-6">
+      <h3>Status Hari Ini</h3>
+      <input id="statusToday" placeholder="Status / fokus hari ini">
+      <button onclick="saveStatus()">Simpan Status</button>
+      <p id="statusSaved"></p>
+    </div>
+
+    <!-- AGENDA -->
+    <div class="card col-6">
+      <h3>Agenda</h3>
+      <input id="agendaText" placeholder="Judul agenda">
+      <input type="datetime-local" id="agendaTime">
+      <button onclick="addAgenda()">Tambah</button>
+      <ul id="agendaList"></ul>
+    </div>
+
+    <!-- JURNAL -->
+    <div class="card col-4">
+      <h3>Jurnal</h3>
+      <textarea id="journal" placeholder="Tulis pikiran kamu..."></textarea>
+      <button onclick="saveJournal()">Simpan</button>
+      <p id="saved"></p>
+    </div>
+
+    <!-- RINGKASAN 7 HARI -->
+    <div class="card col-4">
+      <h3>Ringkasan 7 Hari</h3>
+      <ul id="weeklySummary"></ul>
+    </div>
+
+    <!-- FILE BOX EDITABLE -->
+    <div class="card col-4">
+      <h3>📁 File Box</h3>
+      <button onclick="addBox()">➕ Tambah Box</button>
+      <div id="fileList"></div>
+    </div>
+
+  </div>
+</div>
+
 <script>
-  let files = JSON.parse(localStorage.getItem("files")) || [];
+// ===== LOGIN =====
+const PASSWORD = "Uky@2026!aman";
+function checkPassword() {
+  const val = document.getElementById("passwordInput").value;
+  if(val === PASSWORD){
+    document.getElementById("loginDiv").style.display = "none";
+    document.getElementById("mainDiv").style.display = "block";
+  } else {
+    document.getElementById("loginMsg").innerText = "Password salah!";
+  }
+}
 
-function renderFiles() {
-  const ul = document.getElementById("fileList");
-  ul.innerHTML = "";
+// ===== STATUS HARI INI =====
+function todayKey() {
+  const d = new Date();
+  return `status-${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+}
+window.onload = function () {
+  // status
+  const key = todayKey();
+  document.getElementById("statusToday").value = localStorage.getItem(key) || "";
+  renderWeekly();
+  renderAgenda();
+  renderJournal();
+  renderBoxes();
+};
 
-  files.forEach((f, i) => {
+function saveStatus() {
+  const key = todayKey();
+  const val = document.getElementById("statusToday").value;
+  localStorage.setItem(key, val);
+  document.getElementById("statusSaved").innerText = "Status hari ini tersimpan ✔";
+}
+
+// ===== AGENDA =====
+let agendas = JSON.parse(localStorage.getItem("agendas")) || [];
+function renderAgenda() {
+  const list = document.getElementById("agendaList");
+  list.innerHTML = "";
+  agendas.forEach((a, i) => {
     const li = document.createElement("li");
     li.innerHTML = `
-      📄 ${f.name} 
-      <a href="${f.link}" target="_blank">[Open]</a> 
-      <button onclick="deleteFile(${i})">❌</button>
+      ${a.text} <br> <small>${new Date(a.time).toLocaleString("id-ID")}</small> 
+      <button onclick="deleteAgenda(${i})">❌</button>
+      <button onclick="setAlarm('${a.text}','${a.time}')">⏰ Set Alarm</button>
     `;
-    ul.appendChild(li);
+    list.appendChild(li);
   });
-
-  localStorage.setItem("files", JSON.stringify(files));
+  localStorage.setItem("agendas", JSON.stringify(agendas));
+}
+function addAgenda() {
+  const text = document.getElementById("agendaText").value;
+  const time = document.getElementById("agendaTime").value;
+  if(!text || !time) return;
+  agendas.push({text,time});
+  renderAgenda();
+  document.getElementById("agendaText").value="";
+  document.getElementById("agendaTime").value="";
+}
+function deleteAgenda(i){ agendas.splice(i,1); renderAgenda(); }
+function setAlarm(title,time){
+  const start=new Date(time).toISOString().replace(/-|:|\.\d+/g,"");
+  const url=`https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${start}/${start}`;
+  window.open(url,"_blank");
 }
 
-// Tambah file baru
-function addFile() {
-  const name = document.getElementById("fileName").value;
-  const linkInput = document.getElementById("fileLink").value;
-  const fileInput = document.getElementById("fileUpload").files[0];
+// ===== JURNAL =====
+function renderJournal(){
+  document.getElementById("journal").value = localStorage.getItem("journal") || "";
+}
+function saveJournal(){
+  const val = document.getElementById("journal").value;
+  localStorage.setItem("journal",val);
+  document.getElementById("saved").innerText = "Tersimpan ✔";
+}
 
-  if (!name && !fileInput && !linkInput) return alert("Isi minimal nama atau pilih file/link");
-
-  if (fileInput) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const dataUrl = e.target.result; // simpan file lokal sebagai base64
-      files.push({ name: name || fileInput.name, link: dataUrl });
-      renderFiles();
-    };
-    reader.readAsDataURL(fileInput);
-  } else {
-    files.push({ name, link: linkInput });
-    renderFiles();
+// ===== RINGKASAN MINGGUAN =====
+function renderWeekly(){
+  const ul = document.getElementById("weeklySummary");
+  ul.innerHTML = "";
+  for(let i=6;i>=0;i--){
+    const d=new Date();
+    d.setDate(d.getDate()-i);
+    const key=`status-${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+    const text=localStorage.getItem(key);
+    const li=document.createElement("li");
+    li.innerHTML=`<strong>${d.toLocaleDateString("id-ID")}</strong>: ${text||"<em>(kosong)</em>"}`;
+    ul.appendChild(li);
   }
-
-  // Reset input
-  document.getElementById("fileName").value = "";
-  document.getElementById("fileLink").value = "";
-  document.getElementById("fileUpload").value = "";
 }
 
-function deleteFile(i) {
-  files.splice(i, 1);
-  renderFiles();
-}
-
-// render pertama kali
-renderFiles();
-
-  // Ambil data box dari localStorage
+// ===== FILE BOX EDITABLE =====
 let boxes = JSON.parse(localStorage.getItem("boxes")) || [];
-
-// Render semua box
-function renderBoxes() {
-  const container = document.getElementById("fileList"); // pastikan ID sama dengan div box
+function renderBoxes(){
+  const container = document.getElementById("fileList");
   container.innerHTML = "";
+  boxes.forEach((b,i)=>{
+    const div=document.createElement("div");
+    div.className="file-box";
+    div.contentEditable=true;
+    div.innerText=b.content||"";
+    div.onblur=()=>{ boxes[i].content=div.innerText; localStorage.setItem("boxes",JSON.stringify(boxes)); };
 
-  boxes.forEach((b, i) => {
-    // box content editable
-    const div = document.createElement("div");
-    div.className = "file-box";
-    div.contentEditable = true;
-    div.innerText = b.content || "";
-    
-    // simpan otomatis saat blur (keluar dari box)
-    div.onblur = () => {
-      boxes[i].content = div.innerText;
-      localStorage.setItem("boxes", JSON.stringify(boxes));
-    };
+    const btn=document.createElement("button");
+    btn.innerText="❌";
+    btn.onclick=()=>{ boxes.splice(i,1); renderBoxes(); };
+    btn.style.marginLeft="8px";
 
-    // tombol hapus
-    const btn = document.createElement("button");
-    btn.innerText = "❌";
-    btn.onclick = () => {
-      boxes.splice(i, 1);
-      renderBoxes();
-    };
-    btn.style.marginLeft = "8px";
-
-    // wrapper supaya rapi
-    const wrapper = document.createElement("div");
-    wrapper.style.display = "flex";
-    wrapper.style.alignItems = "center";
-    wrapper.style.marginBottom = "6px";
+    const wrapper=document.createElement("div");
+    wrapper.style.display="flex";
+    wrapper.style.alignItems="center";
+    wrapper.style.marginBottom="6px";
 
     wrapper.appendChild(div);
     wrapper.appendChild(btn);
     container.appendChild(wrapper);
   });
-
-  localStorage.setItem("boxes", JSON.stringify(boxes));
+  localStorage.setItem("boxes",JSON.stringify(boxes));
 }
-
-// Tambah box baru
-function addBox() {
-  boxes.push({ content: "" });
-  renderBoxes();
-}
-
-// render pertama kali
-renderBoxes();
+function addBox(){ boxes.push({content:""}); renderBoxes(); }
 </script>
 
 </body>
