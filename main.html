@@ -16,7 +16,7 @@
   <p id="loginMsg"></p>
 </div>
 
-<!-- MAIN DASHBOARD -->
+<!-- DASHBOARD -->
 <div id="mainDiv" style="display:none;">
   <div class="container">
 
@@ -50,8 +50,24 @@ function checkPassword() {
   }
 }
 
-// ===== AGENDA SYSTEM =====
-let agendaFiles = JSON.parse(localStorage.getItem("agendaFiles")) || {};
+// ===== IndexedDB SETUP =====
+let db;
+const request = indexedDB.open("MiniAgendaDB", 1);
+
+request.onupgradeneeded = (e)=>{
+  db = e.target.result;
+  const store = db.createObjectStore("agendaSlots", { keyPath: "id", autoIncrement:true });
+  store.createIndex("date", "date", { unique:false });
+};
+
+request.onsuccess = (e)=>{
+  db = e.target.result;
+  console.log("DB siap");
+};
+
+request.onerror = (e)=>{ console.error("DB error", e); };
+
+// ===== CURRENT DATE =====
 let currentDate = null;
 
 function loadDate(){
@@ -61,53 +77,98 @@ function loadDate(){
   renderSlots();
 }
 
+// ===== RENDER SLOT =====
 function renderSlots(){
   const container = document.getElementById("agendaSlots");
   container.innerHTML="";
-  if(!agendaFiles[currentDate]) agendaFiles[currentDate]=[];
+  const tx = db.transaction("agendaSlots","readonly");
+  const store = tx.objectStore("agendaSlots");
+  const index = store.index("date");
+  const request = index.getAll(currentDate);
 
-  agendaFiles[currentDate].forEach((slot,i)=>{
-    const div = document.createElement("div");
-    div.className="slot";
-
-    div.innerHTML=`
-      <input type="text" placeholder="Judul Kegiatan" value="${slot.title || ''}" class="slotTitle">
-      <textarea placeholder="Catatan / Deskripsi">${slot.notes || ''}</textarea>
-      <input type="text" placeholder="Attachment / Link" value="${slot.attachment || ''}" class="slotAttachment">
-      <input type="time" value="${slot.time || ''}" class="slotTime">
-      <button onclick="saveSlot(${i})">💾 Simpan Slot</button>
-      <button onclick="deleteSlot(${i})">❌ Hapus Slot</button>
-    `;
-    container.appendChild(div);
-  });
+  request.onsuccess = ()=>{
+    const slots = request.result;
+    slots.forEach(slot=>{
+      createSlotElement(slot);
+    });
+  };
 }
 
-// Tambah slot baru
+// ===== CREATE SLOT ELEMENT =====
+function createSlotElement(slotData){
+  const container = document.getElementById("agendaSlots");
+  const div = document.createElement("div");
+  div.className="slot";
+
+  div.innerHTML=`
+    <input type="text" placeholder="Judul Kegiatan" value="${slotData.title || ''}" class="slotTitle">
+    <textarea placeholder="Catatan / Deskripsi">${slotData.notes || ''}</textarea>
+    <input type="time" value="${slotData.time || ''}" class="slotTime">
+    <input type="file" class="slotFile" accept=".pdf,.docx,.xlsx,image/*" />
+    <button class="saveBtn">💾 Simpan Slot</button>
+    <button class="deleteBtn">❌ Hapus Slot</button>
+    <div class="fileName">${slotData.fileName || ''}</div>
+  `;
+
+  // AUTO EXPAND TEXTAREA
+  const textarea = div.querySelector("textarea");
+  textarea.addEventListener("input", e=>{
+    e.target.style.height = "auto";
+    e.target.style.height = (e.target.scrollHeight) + "px";
+  });
+  textarea.style.height = (textarea.scrollHeight)+"px";
+
+  // SAVE BUTTON
+  div.querySelector(".saveBtn").onclick = ()=>{
+    const title = div.querySelector(".slotTitle").value;
+    const notes = div.querySelector("textarea").value;
+    const time = div.querySelector(".slotTime").value;
+    const fileInput = div.querySelector(".slotFile");
+    const file = fileInput.files[0];
+
+    if(file){
+      const reader = new FileReader();
+      reader.onload = function(e){
+        saveSlot({id:slotData.id, title, notes, time, fileData:e.target.result, fileName:file.name});
+      };
+      reader.readAsDataURL(file);
+    } else {
+      saveSlot({id:slotData.id, title, notes, time, fileData:slotData.fileData||null, fileName:slotData.fileName||''});
+    }
+  };
+
+  // DELETE BUTTON
+  div.querySelector(".deleteBtn").onclick = ()=>{
+    const tx = db.transaction("agendaSlots","readwrite");
+    const store = tx.objectStore("agendaSlots");
+    store.delete(slotData.id);
+    tx.oncomplete = ()=>{ renderSlots(); };
+  };
+
+  container.appendChild(div);
+}
+
+// ===== ADD SLOT BARU =====
 function addSlot(){
   if(!currentDate) return alert("Pilih tanggal dulu!");
-  agendaFiles[currentDate].push({title:"",notes:"",attachment:"",time:""});
-  renderSlots();
+  const tx = db.transaction("agendaSlots","readwrite");
+  const store = tx.objectStore("agendaSlots");
+  const newSlot = {date:currentDate, title:"", notes:"", time:"", fileData:null, fileName:""};
+  const req = store.add(newSlot);
+  req.onsuccess = ()=>{
+    renderSlots();
+  };
 }
 
-// Save slot
-function saveSlot(i){
-  const container = document.getElementById("agendaSlots");
-  const slotDiv = container.children[i];
-  const title = slotDiv.querySelector(".slotTitle").value;
-  const notes = slotDiv.querySelector("textarea").value;
-  const attachment = slotDiv.querySelector(".slotAttachment").value;
-  const time = slotDiv.querySelector(".slotTime").value;
-
-  agendaFiles[currentDate][i] = {title,notes,attachment,time};
-  localStorage.setItem("agendaFiles",JSON.stringify(agendaFiles));
-  alert("Slot tersimpan ✔");
-}
-
-// Hapus slot
-function deleteSlot(i){
-  agendaFiles[currentDate].splice(i,1);
-  localStorage.setItem("agendaFiles",JSON.stringify(agendaFiles));
-  renderSlots();
+// ===== SAVE SLOT =====
+function saveSlot(slot){
+  const tx = db.transaction("agendaSlots","readwrite");
+  const store = tx.objectStore("agendaSlots");
+  store.put(slot);
+  tx.oncomplete = ()=>{
+    alert("Slot tersimpan ✔");
+    renderSlots();
+  };
 }
 </script>
 
