@@ -5,8 +5,8 @@
 
 body {
   margin: 0;
-  background: #020617;
-  color: #e5e7eb;
+  background: #f5f5e5; /* krem soft */
+  color: #1e293b;
   font-family: system-ui, -apple-system, BlinkMacSystemFont;
 }
 
@@ -31,25 +31,25 @@ body {
 
 /* CARD STYLING */
 .card {
-  background: #020617;
-  border: 1px solid #1e293b;
+  background: #fff8e7; /* krem / terang */
+  border: 1px solid #d6d3c5;
   border-radius: 16px;
   padding: 16px;
-  box-shadow: 0 8px 20px rgba(0,0,0,.4);
+  box-shadow: 0 8px 20px rgba(0,0,0,.1);
   transition: transform .2s ease, box-shadow .2s ease;
 }
 
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 16px 32px rgba(0,0,0,.6);
+  box-shadow: 0 16px 32px rgba(0,0,0,.15);
 }
 
 /* INPUT & TEXTAREA */
 input, textarea {
   width: 100%;
-  background: #020617;
-  border: 1px solid #334155;
-  color: #e5e7eb;
+  background: #fff8e7;
+  border: 1px solid #ccc9b8;
+  color: #1e293b;
   padding: 10px;
   border-radius: 10px;
   margin-bottom: 8px;
@@ -57,7 +57,7 @@ input, textarea {
 
 /* BUTTON */
 button {
-  background: #2563eb;
+  background: #8b7d6b;
   color: white;
   border: none;
   padding: 10px;
@@ -67,12 +67,12 @@ button {
 }
 
 button:hover {
-  background: #1d4ed8;
+  background: #6f5f4b;
 }
 
-/* LIST / FILE BOX */
+/* FILE BOX / BOX EDITABLE */
 .file-box {
-  background: #1e293b;
+  background: #e9e3d6;
   padding: 8px;
   border-radius: 8px;
   min-height: 30px;
@@ -81,8 +81,8 @@ button:hover {
 }
 
 .file-box:focus {
-  outline: 2px solid #2563eb;
-  background: #334155;
+  outline: 2px solid #8b7d6b;
+  background: #f2ecd9;
 }
 
 .card h3 {
@@ -90,8 +90,9 @@ button:hover {
   font-weight: 600;
 }
 
-.card ul li, .file-box-wrapper {
+.file-box-wrapper {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 6px;
 }
