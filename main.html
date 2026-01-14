@@ -46,6 +46,13 @@
   <button onclick="addFile()">Tambah</button>
 
   <ul id="fileList"></ul>
+
+    <div class="card col-6">
+  <h3>📁 File Box</h3>
+
+  <button onclick="addBox()">➕ Tambah Box</button>
+
+  <div id="fileList"></div>
 </div>
   
 <script>
@@ -102,6 +109,59 @@ function deleteFile(i) {
 
 // render pertama kali
 renderFiles();
+
+  // Ambil data box dari localStorage
+let boxes = JSON.parse(localStorage.getItem("boxes")) || [];
+
+// Render semua box
+function renderBoxes() {
+  const container = document.getElementById("fileList"); // pastikan ID sama dengan div box
+  container.innerHTML = "";
+
+  boxes.forEach((b, i) => {
+    // box content editable
+    const div = document.createElement("div");
+    div.className = "file-box";
+    div.contentEditable = true;
+    div.innerText = b.content || "";
+    
+    // simpan otomatis saat blur (keluar dari box)
+    div.onblur = () => {
+      boxes[i].content = div.innerText;
+      localStorage.setItem("boxes", JSON.stringify(boxes));
+    };
+
+    // tombol hapus
+    const btn = document.createElement("button");
+    btn.innerText = "❌";
+    btn.onclick = () => {
+      boxes.splice(i, 1);
+      renderBoxes();
+    };
+    btn.style.marginLeft = "8px";
+
+    // wrapper supaya rapi
+    const wrapper = document.createElement("div");
+    wrapper.style.display = "flex";
+    wrapper.style.alignItems = "center";
+    wrapper.style.marginBottom = "6px";
+
+    wrapper.appendChild(div);
+    wrapper.appendChild(btn);
+    container.appendChild(wrapper);
+  });
+
+  localStorage.setItem("boxes", JSON.stringify(boxes));
+}
+
+// Tambah box baru
+function addBox() {
+  boxes.push({ content: "" });
+  renderBoxes();
+}
+
+// render pertama kali
+renderBoxes();
 </script>
 
 </body>
