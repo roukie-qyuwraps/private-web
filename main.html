@@ -16,16 +16,22 @@
   <p id="loginMsg"></p>
 </div>
 
-<!-- MAIN DASHBOARD -->
+<!-- FILE SELECTION / DASHBOARD -->
 <div id="mainDiv" style="display:none;">
+  <div class="card col-12">
+    <h3>📂 Pilih atau Buat File</h3>
+    <input id="fileTitle" placeholder="Judul File Baru">
+    <button onclick="createFile()">➕ Buat File Baru</button>
+    <div id="fileListSidebar"></div>
+  </div>
+
   <div class="container">
 
-    <!-- STATUS HARI INI -->
+    <!-- STATUS -->
     <div class="card col-6">
       <h3>Status Hari Ini</h3>
       <input id="statusToday" placeholder="Status / fokus hari ini">
-      <button onclick="saveStatus()">Simpan Status</button>
-      <p id="statusSaved"></p>
+      <button onclick="saveCurrentFile()">💾 Simpan</button>
     </div>
 
     <!-- AGENDA -->
@@ -33,7 +39,7 @@
       <h3>Agenda</h3>
       <input id="agendaText" placeholder="Judul agenda">
       <input type="datetime-local" id="agendaTime">
-      <button onclick="addAgenda()">Tambah</button>
+      <button onclick="addAgenda()">Tambah Agenda</button>
       <ul id="agendaList"></ul>
     </div>
 
@@ -41,19 +47,11 @@
     <div class="card col-4">
       <h3>Jurnal</h3>
       <textarea id="journal" placeholder="Tulis pikiran kamu..."></textarea>
-      <button onclick="saveJournal()">Simpan</button>
-      <p id="saved"></p>
-    </div>
-
-    <!-- RINGKASAN 7 HARI -->
-    <div class="card col-4">
-      <h3>Ringkasan 7 Hari</h3>
-      <ul id="weeklySummary"></ul>
     </div>
 
     <!-- FILE BOX EDITABLE -->
-    <div class="card col-4">
-      <h3>📁 File Box</h3>
+    <div class="card col-8">
+      <h3>📁 Catatan / Box</h3>
       <button onclick="addBox()">➕ Tambah Box</button>
       <div id="fileList"></div>
     </div>
@@ -66,109 +64,107 @@
 const PASSWORD = "Uky@2026!aman";
 function checkPassword() {
   const val = document.getElementById("passwordInput").value;
-  if(val === PASSWORD){
-    document.getElementById("loginDiv").style.display = "none";
-    document.getElementById("mainDiv").style.display = "block";
+  if(val===PASSWORD){
+    document.getElementById("loginDiv").style.display="none";
+    document.getElementById("mainDiv").style.display="block";
+    loadFileList();
   } else {
-    document.getElementById("loginMsg").innerText = "Password salah!";
+    document.getElementById("loginMsg").innerText="Password salah!";
   }
 }
 
-// ===== STATUS HARI INI =====
-function todayKey() {
-  const d = new Date();
-  return `status-${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
-}
-window.onload = function () {
-  // status
-  const key = todayKey();
-  document.getElementById("statusToday").value = localStorage.getItem(key) || "";
-  renderWeekly();
-  renderAgenda();
-  renderJournal();
-  renderBoxes();
-};
+// ===== FILE SYSTEM =====
+let currentFileTitle = null;
+let files = JSON.parse(localStorage.getItem("files")) || {};
 
-function saveStatus() {
-  const key = todayKey();
-  const val = document.getElementById("statusToday").value;
-  localStorage.setItem(key, val);
-  document.getElementById("statusSaved").innerText = "Status hari ini tersimpan ✔";
+function loadFileList() {
+  const container = document.getElementById("fileListSidebar");
+  container.innerHTML="";
+  Object.keys(files).forEach(title=>{
+    const btn = document.createElement("button");
+    btn.innerText=title;
+    btn.onclick = ()=>loadFile(title);
+    container.appendChild(btn);
+  });
+}
+
+function createFile() {
+  const title = document.getElementById("fileTitle").value.trim();
+  if(!title) return alert("Isi judul file dulu!");
+  if(files[title]) return alert("File sudah ada!");
+  files[title] = {status:"",journal:"",agenda:[],boxes:[]};
+  localStorage.setItem("files",JSON.stringify(files));
+  loadFileList();
+  loadFile(title);
+  document.getElementById("fileTitle").value="";
+}
+
+function loadFile(title){
+  currentFileTitle = title;
+  const f = files[title];
+  document.getElementById("statusToday").value = f.status||"";
+  document.getElementById("journal").value = f.journal||"";
+  renderAgenda();
+  renderBoxes();
+}
+
+// ===== SAVE CURRENT FILE =====
+function saveCurrentFile(){
+  if(!currentFileTitle) return alert("Pilih file dulu!");
+  const f = files[currentFileTitle];
+  f.status = document.getElementById("statusToday").value;
+  f.journal = document.getElementById("journal").value;
+  localStorage.setItem("files",JSON.stringify(files));
+  alert("Tersimpan ✔");
 }
 
 // ===== AGENDA =====
-let agendas = JSON.parse(localStorage.getItem("agendas")) || [];
-function renderAgenda() {
+function renderAgenda(){
+  if(!currentFileTitle) return;
   const list = document.getElementById("agendaList");
-  list.innerHTML = "";
-  agendas.forEach((a, i) => {
+  list.innerHTML="";
+  const ag = files[currentFileTitle].agenda;
+  ag.forEach((a,i)=>{
     const li = document.createElement("li");
-    li.innerHTML = `
-      ${a.text} <br> <small>${new Date(a.time).toLocaleString("id-ID")}</small> 
-      <button onclick="deleteAgenda(${i})">❌</button>
-      <button onclick="setAlarm('${a.text}','${a.time}')">⏰ Set Alarm</button>
-    `;
+    li.innerHTML=`${a.text} <br> <small>${new Date(a.time).toLocaleString("id-ID")}</small> <button onclick="deleteAgenda(${i})">❌</button>`;
     list.appendChild(li);
   });
-  localStorage.setItem("agendas", JSON.stringify(agendas));
 }
-function addAgenda() {
+
+function addAgenda(){
+  if(!currentFileTitle) return alert("Pilih file dulu!");
   const text = document.getElementById("agendaText").value;
   const time = document.getElementById("agendaTime").value;
-  if(!text || !time) return;
-  agendas.push({text,time});
-  renderAgenda();
+  if(!text||!time) return;
+  files[currentFileTitle].agenda.push({text,time});
+  localStorage.setItem("files",JSON.stringify(files));
   document.getElementById("agendaText").value="";
   document.getElementById("agendaTime").value="";
-}
-function deleteAgenda(i){ agendas.splice(i,1); renderAgenda(); }
-function setAlarm(title,time){
-  const start=new Date(time).toISOString().replace(/-|:|\.\d+/g,"");
-  const url=`https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${start}/${start}`;
-  window.open(url,"_blank");
+  renderAgenda();
 }
 
-// ===== JURNAL =====
-function renderJournal(){
-  document.getElementById("journal").value = localStorage.getItem("journal") || "";
-}
-function saveJournal(){
-  const val = document.getElementById("journal").value;
-  localStorage.setItem("journal",val);
-  document.getElementById("saved").innerText = "Tersimpan ✔";
+function deleteAgenda(i){
+  files[currentFileTitle].agenda.splice(i,1);
+  localStorage.setItem("files",JSON.stringify(files));
+  renderAgenda();
 }
 
-// ===== RINGKASAN MINGGUAN =====
-function renderWeekly(){
-  const ul = document.getElementById("weeklySummary");
-  ul.innerHTML = "";
-  for(let i=6;i>=0;i--){
-    const d=new Date();
-    d.setDate(d.getDate()-i);
-    const key=`status-${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
-    const text=localStorage.getItem(key);
-    const li=document.createElement("li");
-    li.innerHTML=`<strong>${d.toLocaleDateString("id-ID")}</strong>: ${text||"<em>(kosong)</em>"}`;
-    ul.appendChild(li);
-  }
-}
-
-// ===== FILE BOX EDITABLE =====
-let boxes = JSON.parse(localStorage.getItem("boxes")) || [];
+// ===== FILE BOX =====
 function renderBoxes(){
+  if(!currentFileTitle) return;
   const container = document.getElementById("fileList");
-  container.innerHTML = "";
-  boxes.forEach((b,i)=>{
+  container.innerHTML="";
+  const boxArr = files[currentFileTitle].boxes;
+  boxArr.forEach((b,i)=>{
     const div=document.createElement("div");
     div.className="file-box";
     div.contentEditable=true;
     div.innerText=b.content||"";
-    div.onblur=()=>{ boxes[i].content=div.innerText; localStorage.setItem("boxes",JSON.stringify(boxes)); };
+    div.onblur=()=>{ boxArr[i].content=div.innerText; localStorage.setItem("files",JSON.stringify(files)); };
 
     const btn=document.createElement("button");
     btn.innerText="❌";
-    btn.onclick=()=>{ boxes.splice(i,1); renderBoxes(); };
-    btn.style.marginLeft="8px";
+    btn.onclick=()=>{ boxArr.splice(i,1); renderBoxes(); };
 
     const wrapper=document.createElement("div");
     wrapper.style.display="flex";
@@ -179,10 +175,14 @@ function renderBoxes(){
     wrapper.appendChild(btn);
     container.appendChild(wrapper);
   });
-  localStorage.setItem("boxes",JSON.stringify(boxes));
 }
-function addBox(){ boxes.push({content:""}); renderBoxes(); }
-</script>
 
+function addBox(){
+  if(!currentFileTitle) return alert("Pilih file dulu!");
+  files[currentFileTitle].boxes.push({content:""});
+  localStorage.setItem("files",JSON.stringify(files));
+  renderBoxes();
+}
+</script>
 </body>
 </html>
