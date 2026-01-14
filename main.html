@@ -13,47 +13,32 @@
 
 <div class="container">
 
-  <div class="card">
-    <h3>📊 Status Hari Ini</h3>
-    <p id="date"></p>
-    <input id="statusToday" placeholder="Status / fokus hari ini"
-style="width:100%;padding:8px;border-radius:6px;border:1px solid #334155;
-background:#020617;color:#e5e7eb;">
-<button onclick="saveStatus()">Simpan Status</button>
-<p id="statusSaved"></p>
+  <div class="card col-6">
+    <h3>Status Hari Ini</h3>
+    <!-- status -->
   </div>
 
-  <div class="card">
-    <h3>📓 Jurnal Harian</h3>
-    <textarea id="journal" placeholder="Tulis isi pikiran kamu di sini..."></textarea>
-    <button onclick="saveJournal()">Simpan</button>
-    <p id="saved"></p>
+  <div class="card col-6">
+    <h3>Agenda</h3>
+    <!-- agenda -->
   </div>
 
-  <div class="card">
-  <h3>📊 Ringkasan 7 Hari Terakhir</h3>
-  <ul id="weeklySummary"></ul>
-</div>
+  <div class="card col-4">
+    <h3>Jurnal</h3>
+    <!-- jurnal -->
+  </div>
 
-  <div class="card">
-  <h3>📅 Agenda</h3>
+  <div class="card col-4">
+    <h3>Ringkasan</h3>
+    <!-- weekly -->
+  </div>
 
-  <input id="agendaText" placeholder="Judul agenda" style="width:100%;padding:8px;">
-  <br><br>
-
-  <input type="datetime-local" id="agendaTime" style="width:100%;padding:8px;">
-
-  <button onclick="addAgenda()">Tambah</button>
-
-  <ul id="agendaList"></ul>
-</div>
-
-  <div class="card">
-    <button class="logout" onclick="logout()">Logout</button>
+  <div class="card col-4">
+    <h3>Catatan</h3>
+    <!-- bebas -->
   </div>
 
 </div>
-
 <script>
   if (sessionStorage.getItem("auth") !== "true") {
     window.location.href = "index.html";
