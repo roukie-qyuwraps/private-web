@@ -31,6 +31,11 @@ background:#020617;color:#e5e7eb;">
   </div>
 
   <div class="card">
+  <h3>📊 Ringkasan 7 Hari Terakhir</h3>
+  <ul id="weeklySummary"></ul>
+</div>
+
+  <div class="card">
   <h3>📅 Agenda</h3>
 
   <input id="agendaText" placeholder="Judul agenda" style="width:100%;padding:8px;">
@@ -130,13 +135,44 @@ renderAgenda();
 document.getElementById("statusToday").value =
   localStorage.getItem("statusToday") || "";
 
-function saveStatus() {
-  localStorage.setItem(
-    "statusToday",
-    document.getElementById("statusToday").value
-  );
-  document.getElementById("statusSaved").innerText = "Status tersimpan ✔";
+function todayKey() {
+  const d = new Date();
+  return `status-${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
 }
+
+window.onload = function () {
+  const key = todayKey();
+  document.getElementById("statusToday").value =
+    localStorage.getItem(key) || "";
+};
+
+function saveStatus() {
+  const key = todayKey();
+  const val = document.getElementById("statusToday").value;
+  localStorage.setItem(key, val);
+  document.getElementById("statusSaved").innerText =
+    "Status hari ini tersimpan ✔";
+}
+
+  function renderWeekly() {
+  const ul = document.getElementById("weeklySummary");
+  ul.innerHTML = "";
+
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+
+    const key = `status-${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+    const text = localStorage.getItem(key);
+
+    const li = document.createElement("li");
+    li.innerHTML = `<strong>${d.toLocaleDateString("id-ID")}</strong>: 
+      ${text || "<em>(kosong)</em>"}`;
+    ul.appendChild(li);
+  }
+}
+
+renderWeekly();
 </script>
 
 </body>
