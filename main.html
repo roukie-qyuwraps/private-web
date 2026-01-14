@@ -104,7 +104,11 @@ function createSlotElement(slotData){
     <input type="text" placeholder="Judul Kegiatan" value="${slotData.title || ''}" class="slotTitle">
     <textarea placeholder="Catatan / Deskripsi">${slotData.notes || ''}</textarea>
     <input type="time" value="${slotData.time || ''}" class="slotTime">
-    <input type="file" class="slotFile" accept=".pdf,.docx,.xlsx,image/*" />
+
+    <!-- ATTACH ICON -->
+    <button class="attachBtn">📎 Attach File</button>
+    <input type="file" class="slotFile" accept=".pdf,.docx,.xlsx,image/*" style="display:none" />
+
     <button class="saveBtn">💾 Simpan Slot</button>
     <button class="deleteBtn">❌ Hapus Slot</button>
     <div class="fileName">${slotData.fileName || ''}</div>
@@ -118,12 +122,25 @@ function createSlotElement(slotData){
   });
   textarea.style.height = (textarea.scrollHeight)+"px";
 
+  // ATTACH FILE ICON
+  const attachBtn = div.querySelector(".attachBtn");
+  const fileInput = div.querySelector(".slotFile");
+  const fileNameDiv = div.querySelector(".fileName");
+
+  attachBtn.onclick = ()=>{ fileInput.click(); };
+  fileInput.onchange = ()=>{
+    if(fileInput.files[0]){
+      fileNameDiv.innerText = fileInput.files[0].name;
+    } else {
+      fileNameDiv.innerText = "";
+    }
+  };
+
   // SAVE BUTTON
   div.querySelector(".saveBtn").onclick = ()=>{
     const title = div.querySelector(".slotTitle").value;
     const notes = div.querySelector("textarea").value;
     const time = div.querySelector(".slotTime").value;
-    const fileInput = div.querySelector(".slotFile");
     const file = fileInput.files[0];
 
     if(file){
