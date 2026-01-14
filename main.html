@@ -38,126 +38,70 @@
     <!-- bebas -->
   </div>
 
+  <div class="card col-6">
+  <h3>📁 File Box</h3>
+
+  <input id="fileName" placeholder="Nama file / folder">
+  <input id="fileLink" placeholder="Link (Drive / lokal)">
+  <button onclick="addFile()">Tambah</button>
+
+  <ul id="fileList"></ul>
 </div>
+  
 <script>
-  if (sessionStorage.getItem("auth") !== "true") {
-    window.location.href = "index.html";
-  }
+  let files = JSON.parse(localStorage.getItem("files")) || [];
 
-  document.getElementById("date").innerText =
-    new Date().toLocaleDateString("id-ID", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric"
-    });
-
-  document.getElementById("journal").value =
-    localStorage.getItem("journal") || "";
-
-  function saveJournal() {
-    localStorage.setItem(
-      "journal",
-      document.getElementById("journal").value
-    );
-    document.getElementById("saved").innerText = "Tersimpan ✔";
-  }
-
-  function logout() {
-    sessionStorage.clear();
-    window.location.href = "index.html";
-  }
-
-  let agendas = JSON.parse(localStorage.getItem("agendas")) || [];
-
-function renderAgenda() {
-  const list = document.getElementById("agendaList");
-  list.innerHTML = "";
-
-  agendas.forEach((a, i) => {
-    const li = document.createElement("li");
-    li.innerHTML = `
-      ${a.text}<br>
-      <small>${new Date(a.time).toLocaleString("id-ID")}</small><br>
-      <button onclick="setAlarm('${a.text}','${a.time}')">⏰ Set Alarm</button>
-      <button onclick="deleteAgenda(${i})">❌</button>
-    `;
-    list.appendChild(li);
-  });
-
-  localStorage.setItem("agendas", JSON.stringify(agendas));
-}
-
-function addAgenda() {
-  const text = document.getElementById("agendaText").value;
-  const time = document.getElementById("agendaTime").value;
-  if (!text || !time) return;
-
-  agendas.push({ text, time });
-  renderAgenda();
-
-  document.getElementById("agendaText").value = "";
-  document.getElementById("agendaTime").value = "";
-}
-
-function deleteAgenda(i) {
-  agendas.splice(i, 1);
-  renderAgenda();
-}
-
-function setAlarm(title, time) {
-  const start = new Date(time).toISOString().replace(/-|:|\.\d+/g,"");
-  const end = start;
-
-  const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${start}/${end}`;
-
-  window.open(url, "_blank");
-}
-
-renderAgenda();
-
-  // load status
-document.getElementById("statusToday").value =
-  localStorage.getItem("statusToday") || "";
-
-function todayKey() {
-  const d = new Date();
-  return `status-${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
-}
-
-window.onload = function () {
-  const key = todayKey();
-  document.getElementById("statusToday").value =
-    localStorage.getItem(key) || "";
-};
-
-function saveStatus() {
-  const key = todayKey();
-  const val = document.getElementById("statusToday").value;
-  localStorage.setItem(key, val);
-  document.getElementById("statusSaved").innerText =
-    "Status hari ini tersimpan ✔";
-}
-
-  function renderWeekly() {
-  const ul = document.getElementById("weeklySummary");
+function renderFiles() {
+  const ul = document.getElementById("fileList");
   ul.innerHTML = "";
 
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-
-    const key = `status-${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
-    const text = localStorage.getItem(key);
-
+  files.forEach((f, i) => {
     const li = document.createElement("li");
-    li.innerHTML = `<strong>${d.toLocaleDateString("id-ID")}</strong>: 
-      ${text || "<em>(kosong)</em>"}`;
+    li.innerHTML = `
+      📄 ${f.name} 
+      <a href="${f.link}" target="_blank">[Open]</a> 
+      <button onclick="deleteFile(${i})">❌</button>
+    `;
     ul.appendChild(li);
-  }
+  });
+
+  localStorage.setItem("files", JSON.stringify(files));
 }
 
-renderWeekly();
+// Tambah file baru
+function addFile() {
+  const name = document.getElementById("fileName").value;
+  const linkInput = document.getElementById("fileLink").value;
+  const fileInput = document.getElementById("fileUpload").files[0];
+
+  if (!name && !fileInput && !linkInput) return alert("Isi minimal nama atau pilih file/link");
+
+  if (fileInput) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const dataUrl = e.target.result; // simpan file lokal sebagai base64
+      files.push({ name: name || fileInput.name, link: dataUrl });
+      renderFiles();
+    };
+    reader.readAsDataURL(fileInput);
+  } else {
+    files.push({ name, link: linkInput });
+    renderFiles();
+  }
+
+  // Reset input
+  document.getElementById("fileName").value = "";
+  document.getElementById("fileLink").value = "";
+  document.getElementById("fileUpload").value = "";
+}
+
+function deleteFile(i) {
+  files.splice(i, 1);
+  renderFiles();
+}
+
+// render pertama kali
+renderFiles();
 </script>
 
 </body>
