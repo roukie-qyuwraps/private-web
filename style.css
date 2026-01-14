@@ -5,14 +5,14 @@
 
 body {
   margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont;
   background: #f5f5e5; /* krem soft */
   color: #1e293b;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont;
 }
 
-/* CONTAINER GRID */
+/* CONTAINER & GRID */
 .container {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: auto;
   padding: 16px;
   display: grid;
@@ -20,18 +20,13 @@ body {
   gap: 16px;
 }
 
-/* COLUMN SIZES */
-.col-4 { grid-column: span 4; }
-.col-6 { grid-column: span 6; }
-.col-12 { grid-column: span 12; }
-
 @media (max-width: 768px) {
-  .col-4, .col-6, .col-12 { grid-column: span 12; }
+  .container { grid-template-columns: 1fr; }
 }
 
-/* CARD STYLING */
+/* CARD */
 .card {
-  background: #fff8e7; /* krem / terang */
+  background: #fff8e7;
   border: 1px solid #d6d3c5;
   border-radius: 16px;
   padding: 16px;
@@ -44,15 +39,20 @@ body {
   box-shadow: 0 16px 32px rgba(0,0,0,.15);
 }
 
-/* INPUT & TEXTAREA */
+.card h3 {
+  margin-top: 0;
+  font-weight: 600;
+}
+
+/* INPUT / TEXTAREA / TIME */
 input, textarea {
   width: 100%;
   background: #fff8e7;
   border: 1px solid #ccc9b8;
   color: #1e293b;
-  padding: 10px;
-  border-radius: 10px;
-  margin-bottom: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  margin-bottom: 6px;
 }
 
 /* BUTTON */
@@ -60,39 +60,28 @@ button {
   background: #8b7d6b;
   color: white;
   border: none;
-  padding: 10px;
-  border-radius: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
   cursor: pointer;
-  margin-top: 6px;
+  margin: 4px 0;
 }
 
 button:hover {
   background: #6f5f4b;
 }
 
-/* FILE BOX / BOX EDITABLE */
-.file-box {
+/* SLOT AGENDA */
+.slot {
   background: #e9e3d6;
   padding: 8px;
   border-radius: 8px;
-  min-height: 30px;
-  cursor: text;
-  flex: 1;
+  margin-bottom: 8px;
 }
 
-.file-box:focus {
-  outline: 2px solid #8b7d6b;
-  background: #f2ecd9;
+.slot input, .slot textarea {
+  margin-bottom: 4px;
 }
 
-.card h3 {
-  margin-top: 0;
-  font-weight: 600;
-}
-
-.file-box-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 6px;
+.slot button {
+  margin-top: 4px;
 }
