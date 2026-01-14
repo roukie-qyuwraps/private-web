@@ -79,6 +79,7 @@ function loadDate(){
 
 // ===== RENDER SLOT =====
 function renderSlots(){
+  if(!currentDate) return;
   const container = document.getElementById("agendaSlots");
   container.innerHTML="";
   const tx = db.transaction("agendaSlots","readonly");
@@ -121,7 +122,7 @@ function createSlotElement(slotData){
     const title = div.querySelector(".slotTitle").value;
     const notes = div.querySelector("textarea").value;
     const time = div.querySelector(".slotTime").value;
-    saveSlot({id:slotData.id, title, notes, time});
+    saveSlot({id:slotData.id, date:currentDate, title, notes, time});
   };
 
   // DELETE BUTTON
