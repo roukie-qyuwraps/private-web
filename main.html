@@ -16,7 +16,11 @@
   <div class="card">
     <h3>📊 Status Hari Ini</h3>
     <p id="date"></p>
-    <p>Fokus: Tenang, konsisten, pelan tapi jalan.</p>
+    <input id="statusToday" placeholder="Status / fokus hari ini"
+style="width:100%;padding:8px;border-radius:6px;border:1px solid #334155;
+background:#020617;color:#e5e7eb;">
+<button onclick="saveStatus()">Simpan Status</button>
+<p id="statusSaved"></p>
   </div>
 
   <div class="card">
@@ -121,6 +125,18 @@ function setAlarm(title, time) {
 }
 
 renderAgenda();
+
+  // load status
+document.getElementById("statusToday").value =
+  localStorage.getItem("statusToday") || "";
+
+function saveStatus() {
+  localStorage.setItem(
+    "statusToday",
+    document.getElementById("statusToday").value
+  );
+  document.getElementById("statusSaved").innerText = "Status tersimpan ✔";
+}
 </script>
 
 </body>
