@@ -50,26 +50,11 @@ function checkPassword() {
   }
 }
 
-// ===== IndexedDB SETUP =====
-let db;
-const request = indexedDB.open("MiniAgendaDB", 1);
-
-request.onupgradeneeded = (e)=>{
-  db = e.target.result;
-  const store = db.createObjectStore("agendaSlots", { keyPath: "id", autoIncrement:true });
-  store.createIndex("date", "date", { unique:false });
-};
-
-request.onsuccess = (e)=>{
-  db = e.target.result;
-  console.log("DB siap");
-};
-
-request.onerror = (e)=>{ console.error("DB error", e); };
-
-// ===== CURRENT DATE =====
+// ===== LocalStorage SETUP =====
+let agendaData = JSON.parse(localStorage.getItem("MiniAgenda")) || {};
 let currentDate = null;
 
+// ===== LOAD TANGGAL =====
 function loadDate(){
   const d = document.getElementById("datePicker").value;
   if(!d) return alert("Pilih tanggal dulu!");
@@ -79,24 +64,16 @@ function loadDate(){
 
 // ===== RENDER SLOT =====
 function renderSlots(){
-  if(!currentDate) return;
   const container = document.getElementById("agendaSlots");
   container.innerHTML="";
-  const tx = db.transaction("agendaSlots","readonly");
-  const store = tx.objectStore("agendaSlots");
-  const index = store.index("date");
-  const request = index.getAll(currentDate);
-
-  request.onsuccess = ()=>{
-    const slots = request.result;
-    slots.forEach(slot=>{
-      createSlotElement(slot);
-    });
-  };
+  const slots = agendaData[currentDate] || [];
+  slots.forEach((slot, index)=>{
+    createSlotElement(slot, index);
+  });
 }
 
 // ===== CREATE SLOT ELEMENT =====
-function createSlotElement(slotData){
+function createSlotElement(slotData, index){
   const container = document.getElementById("agendaSlots");
   const div = document.createElement("div");
   div.className="slot";
@@ -122,15 +99,16 @@ function createSlotElement(slotData){
     const title = div.querySelector(".slotTitle").value;
     const notes = div.querySelector("textarea").value;
     const time = div.querySelector(".slotTime").value;
-    saveSlot({id:slotData.id, date:currentDate, title, notes, time});
+    agendaData[currentDate][index] = {title, notes, time};
+    localStorage.setItem("MiniAgenda", JSON.stringify(agendaData));
+    alert("Slot tersimpan ✔");
   };
 
   // DELETE BUTTON
   div.querySelector(".deleteBtn").onclick = ()=>{
-    const tx = db.transaction("agendaSlots","readwrite");
-    const store = tx.objectStore("agendaSlots");
-    store.delete(slotData.id);
-    tx.oncomplete = ()=>{ renderSlots(); };
+    agendaData[currentDate].splice(index, 1);
+    localStorage.setItem("MiniAgenda", JSON.stringify(agendaData));
+    renderSlots();
   };
 
   container.appendChild(div);
@@ -139,24 +117,10 @@ function createSlotElement(slotData){
 // ===== ADD SLOT BARU =====
 function addSlot(){
   if(!currentDate) return alert("Pilih tanggal dulu!");
-  const tx = db.transaction("agendaSlots","readwrite");
-  const store = tx.objectStore("agendaSlots");
-  const newSlot = {date:currentDate, title:"", notes:"", time:""};
-  const req = store.add(newSlot);
-  req.onsuccess = ()=>{
-    renderSlots();
-  };
-}
-
-// ===== SAVE SLOT =====
-function saveSlot(slot){
-  const tx = db.transaction("agendaSlots","readwrite");
-  const store = tx.objectStore("agendaSlots");
-  store.put(slot);
-  tx.oncomplete = ()=>{
-    alert("Slot tersimpan ✔");
-    renderSlots();
-  };
+  if(!agendaData[currentDate]) agendaData[currentDate] = [];
+  agendaData[currentDate].push({title:"", notes:"", time:""});
+  localStorage.setItem("MiniAgenda", JSON.stringify(agendaData));
+  renderSlots();
 }
 </script>
 
