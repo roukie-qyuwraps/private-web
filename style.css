@@ -1,3 +1,4 @@
+/* RESET & GLOBAL */
 * {
   box-sizing: border-box;
 }
@@ -9,7 +10,7 @@ body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont;
 }
 
-/* CONTAINER */
+/* CONTAINER GRID */
 .container {
   max-width: 1200px;
   margin: auto;
@@ -19,7 +20,16 @@ body {
   gap: 16px;
 }
 
-/* CARD */
+/* COLUMN SIZES */
+.col-4 { grid-column: span 4; }
+.col-6 { grid-column: span 6; }
+.col-12 { grid-column: span 12; }
+
+@media (max-width: 768px) {
+  .col-4, .col-6, .col-12 { grid-column: span 12; }
+}
+
+/* CARD STYLING */
 .card {
   background: #020617;
   border: 1px solid #1e293b;
@@ -34,18 +44,7 @@ body {
   box-shadow: 0 16px 32px rgba(0,0,0,.6);
 }
 
-.col-4 { grid-column: span 4; }
-.col-6 { grid-column: span 6; }
-.col-12 { grid-column: span 12; }
-
-/* Mobile auto 1 kolom */
-@media (max-width: 768px) {
-  .col-4, .col-6, .col-12 {
-    grid-column: span 12;
-  }
-}
-
-/* INPUT */
+/* INPUT & TEXTAREA */
 input, textarea {
   width: 100%;
   background: #020617;
@@ -71,15 +70,7 @@ button:hover {
   background: #1d4ed8;
 }
 
-/* LIST */
-ul {
-  padding-left: 16px;
-}
-
-li {
-  margin-bottom: 8px;
-}
-
+/* LIST / FILE BOX */
 .file-box {
   background: #1e293b;
   padding: 8px;
@@ -92,4 +83,15 @@ li {
 .file-box:focus {
   outline: 2px solid #2563eb;
   background: #334155;
+}
+
+.card h3 {
+  margin-top: 0;
+  font-weight: 600;
+}
+
+.card ul li, .file-box-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
