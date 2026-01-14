@@ -48,3 +48,25 @@ button {
 button.logout {
   background: #dc2626;
 }
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont;
+}
+
+.card {
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0,0,0,.4);
+}
+
+button {
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+input, textarea {
+  border-radius: 8px;
+}
