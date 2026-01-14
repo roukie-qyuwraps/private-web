@@ -1,105 +1,102 @@
-/* RESET & GLOBAL */
+/* GLOBAL */
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont;
-  background: #f5f5e5; /* krem soft */
-  color: #1e293b;
+  font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont;
+  background: #f4f1ed; /* krem lembut */
+  color: #2c2a29;
 }
 
 /* CONTAINER */
 .container {
-  max-width: 1000px;
+  max-width: 900px;
   margin: auto;
-  padding: 16px;
+  padding: 20px;
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: 16px;
+  gap: 20px;
 }
 
 @media (max-width: 768px) {
   .container { grid-template-columns: 1fr; }
 }
 
-/* CARD */
+/* CARD ELEGAN */
 .card {
-  background: #fff8e7;
-  border: 1px solid #d6d3c5;
+  background: #ffffff;
   border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 8px 20px rgba(0,0,0,.1);
-  transition: transform .2s ease, box-shadow .2s ease;
+  padding: 20px;
+  box-shadow: 0 8px 20px rgba(0,0,0,.08);
+  transition: all 0.3s ease;
 }
 
 .card:hover {
+  box-shadow: 0 16px 40px rgba(0,0,0,.12);
   transform: translateY(-4px);
-  box-shadow: 0 16px 32px rgba(0,0,0,.15);
 }
 
 .card h3 {
   margin-top: 0;
   font-weight: 600;
+  color: #4b3f3f;
 }
 
-/* INPUT / TEXTAREA / TIME / FILE */
+/* INPUT / TEXTAREA / TIME */
 input, textarea, select {
   width: 100%;
-  background: #fff8e7;
-  border: 1px solid #ccc9b8;
-  color: #1e293b;
-  padding: 8px;
-  border-radius: 8px;
-  margin-bottom: 6px;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid #d1cfc7;
+  background: #fefcf7;
+  color: #2c2a29;
+  font-size: 14px;
+  margin-bottom: 8px;
+  transition: border 0.3s;
 }
 
-/* TEXTAREA LEBIH BESAR & AUTO-EXPAND */
+input:focus, textarea:focus, select:focus {
+  border-color: #b89f7c;
+  outline: none;
+}
+
+/* TEXTAREA LEBIH BESAR */
 .slot textarea {
-  width: 100%;
-  min-height: 100px;
-  max-height: 300px;
-  padding: 10px;
+  min-height: 130px;
+  max-height: 350px;
   resize: vertical;
-  border-radius: 8px;
-  border: 1px solid #ccc9b8;
-  margin-bottom: 6px;
-  background: #fff8e7;
-  color: #1e293b;
+  padding: 12px;
   font-size: 14px;
 }
 
-/* BUTTON */
+/* BUTTON ELEGAN */
 button {
-  background: #8b7d6b;
-  color: white;
+  background: #b89f7c; /* cokelat gold */
+  color: #ffffff;
   border: none;
-  padding: 8px 12px;
-  border-radius: 8px;
+  border-radius: 12px;
+  padding: 10px 16px;
   cursor: pointer;
   margin: 4px 0;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
 button:hover {
-  background: #6f5f4b;
+  background: #9e8762;
 }
 
-/* SLOT AGENDA */
+/* SLOT */
 .slot {
-  background: #e9e3d6;
-  padding: 8px;
-  border-radius: 8px;
-  margin-bottom: 8px;
+  background: #fdfaf5;
+  padding: 14px;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.05);
 }
 
 .slot input, .slot textarea, .slot select {
-  margin-bottom: 4px;
-}
-
-.fileName {
-  font-size: 12px;
-  color: #555;
-  margin-top: 4px;
-  word-break: break-word;
+  margin-bottom: 6px;
 }
