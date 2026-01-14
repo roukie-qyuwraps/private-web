@@ -10,7 +10,7 @@ body {
   color: #1e293b;
 }
 
-/* CONTAINER & GRID */
+/* CONTAINER */
 .container {
   max-width: 1000px;
   margin: auto;
@@ -44,8 +44,8 @@ body {
   font-weight: 600;
 }
 
-/* INPUT / TEXTAREA / TIME */
-input, textarea {
+/* INPUT / TEXTAREA / TIME / FILE */
+input, textarea, select {
   width: 100%;
   background: #fff8e7;
   border: 1px solid #ccc9b8;
@@ -53,6 +53,21 @@ input, textarea {
   padding: 8px;
   border-radius: 8px;
   margin-bottom: 6px;
+}
+
+/* TEXTAREA LEBIH BESAR & AUTO-EXPAND */
+.slot textarea {
+  width: 100%;
+  min-height: 100px;
+  max-height: 300px;
+  padding: 10px;
+  resize: vertical;
+  border-radius: 8px;
+  border: 1px solid #ccc9b8;
+  margin-bottom: 6px;
+  background: #fff8e7;
+  color: #1e293b;
+  font-size: 14px;
 }
 
 /* BUTTON */
@@ -78,10 +93,13 @@ button:hover {
   margin-bottom: 8px;
 }
 
-.slot input, .slot textarea {
+.slot input, .slot textarea, .slot select {
   margin-bottom: 4px;
 }
 
-.slot button {
+.fileName {
+  font-size: 12px;
+  color: #555;
   margin-top: 4px;
+  word-break: break-word;
 }
