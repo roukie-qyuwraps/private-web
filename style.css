@@ -79,3 +79,17 @@ ul {
 li {
   margin-bottom: 8px;
 }
+
+.file-box {
+  background: #1e293b;
+  padding: 8px;
+  border-radius: 8px;
+  min-height: 30px;
+  cursor: text;
+  flex: 1;
+}
+
+.file-box:focus {
+  outline: 2px solid #2563eb;
+  background: #334155;
+}
