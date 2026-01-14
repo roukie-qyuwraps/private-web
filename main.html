@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mini Google Agenda</title>
+<title>Mini Google Agenda Elegan</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -104,14 +104,8 @@ function createSlotElement(slotData){
     <input type="text" placeholder="Judul Kegiatan" value="${slotData.title || ''}" class="slotTitle">
     <textarea placeholder="Catatan / Deskripsi">${slotData.notes || ''}</textarea>
     <input type="time" value="${slotData.time || ''}" class="slotTime">
-
-    <!-- ATTACH ICON -->
-    <button class="attachBtn">📎 Attach File</button>
-    <input type="file" class="slotFile" accept=".pdf,.docx,.xlsx,image/*" style="display:none" />
-
     <button class="saveBtn">💾 Simpan Slot</button>
     <button class="deleteBtn">❌ Hapus Slot</button>
-    <div class="fileName">${slotData.fileName || ''}</div>
   `;
 
   // AUTO EXPAND TEXTAREA
@@ -122,36 +116,12 @@ function createSlotElement(slotData){
   });
   textarea.style.height = (textarea.scrollHeight)+"px";
 
-  // ATTACH FILE ICON
-  const attachBtn = div.querySelector(".attachBtn");
-  const fileInput = div.querySelector(".slotFile");
-  const fileNameDiv = div.querySelector(".fileName");
-
-  attachBtn.onclick = ()=>{ fileInput.click(); };
-  fileInput.onchange = ()=>{
-    if(fileInput.files[0]){
-      fileNameDiv.innerText = fileInput.files[0].name;
-    } else {
-      fileNameDiv.innerText = "";
-    }
-  };
-
   // SAVE BUTTON
   div.querySelector(".saveBtn").onclick = ()=>{
     const title = div.querySelector(".slotTitle").value;
     const notes = div.querySelector("textarea").value;
     const time = div.querySelector(".slotTime").value;
-    const file = fileInput.files[0];
-
-    if(file){
-      const reader = new FileReader();
-      reader.onload = function(e){
-        saveSlot({id:slotData.id, title, notes, time, fileData:e.target.result, fileName:file.name});
-      };
-      reader.readAsDataURL(file);
-    } else {
-      saveSlot({id:slotData.id, title, notes, time, fileData:slotData.fileData||null, fileName:slotData.fileName||''});
-    }
+    saveSlot({id:slotData.id, title, notes, time});
   };
 
   // DELETE BUTTON
@@ -170,7 +140,7 @@ function addSlot(){
   if(!currentDate) return alert("Pilih tanggal dulu!");
   const tx = db.transaction("agendaSlots","readwrite");
   const store = tx.objectStore("agendaSlots");
-  const newSlot = {date:currentDate, title:"", notes:"", time:"", fileData:null, fileName:""};
+  const newSlot = {date:currentDate, title:"", notes:"", time:""};
   const req = store.add(newSlot);
   req.onsuccess = ()=>{
     renderSlots();
