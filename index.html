@@ -3,28 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Agenda Pribadi</title>
+  <title>Agenda Harian</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <div class="app">
-    <h1>Agenda Harian</h1>
+<div class="app">
+  <h1>Agenda Harian</h1>
 
-    <div class="card">
-      <label>Tanggal</label>
-      <input type="date" id="date" onchange="loadAgenda()">
-
-      <label>Judul</label>
-      <input type="text" id="title" placeholder="Judul kegiatan">
-
-      <label>Catatan</label>
-      <textarea id="note" placeholder="Tulis catatan di sini..."></textarea>
-
-      <button onclick="saveAgenda()">Simpan</button>
-    </div>
+  <div class="top">
+    <input type="date" id="date" onchange="loadAgendaDay()">
+    <button onclick="addAgenda()">+ Tambah Agenda</button>
   </div>
 
-  <script src="script.js"></script>
+  <div id="agendaList"></div>
+
+  <div class="bottom">
+    <button onclick="exportData()">Export</button>
+
+    <label class="import">
+      Import
+      <input type="file" accept="application/json" onchange="importData(event)">
+    </label>
+  </div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
