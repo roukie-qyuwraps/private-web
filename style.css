@@ -1,68 +1,59 @@
 * {
   box-sizing: border-box;
+  font-family: system-ui, sans-serif;
 }
 
 body {
   margin: 0;
-  padding: 20px;
-  font-family: Arial, sans-serif;
-  background: #f3f2ee;
+  background: #f2f2f2;
+}
+
+.app {
+  max-width: 480px;
+  margin: auto;
+  padding: 16px;
+}
+
+h1 {
+  text-align: center;
   color: #333;
 }
 
-.top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
+.card {
+  background: #fafafa;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-.toolbar {
-  margin-bottom: 16px;
+label {
+  display: block;
+  margin-top: 12px;
+  font-weight: 600;
+  color: #555;
+}
+
+input, textarea {
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+}
+
+textarea {
+  min-height: 140px;
+  resize: vertical;
 }
 
 button {
-  background: #7a7f6a;
-  color: #fff;
+  width: 100%;
+  margin-top: 16px;
+  padding: 12px;
   border: none;
-  padding: 8px 14px;
-  margin-right: 6px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-button:hover {
-  opacity: 0.9;
-}
-
-#agendaContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 14px;
-}
-
-.agenda-box {
-  background: #ffffff;
-  padding: 14px;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.agenda-box input {
-  padding: 6px;
-  font-size: 14px;
-}
-
-.agenda-box textarea {
-  min-height: 160px;
-  padding: 8px;
-  resize: vertical;
-  font-size: 14px;
-}
-
-.agenda-actions {
-  display: flex;
-  justify-content: space-between;
+  border-radius: 12px;
+  background: #4f6ef7;
+  color: white;
+  font-size: 16px;
 }
