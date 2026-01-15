@@ -1,3 +1,4 @@
+alert("SCRIPT KELOAD");
 const STORAGE_KEY = "agendaData";
 
 function getData() {
