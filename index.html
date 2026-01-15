@@ -1,31 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <title>Private Access</title>
+  <meta charset="UTF-8">
+  <title>Agenda Harian</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="box">
-  <h2>Private Page</h2>
-  <input type="password" id="password" placeholder="Password">
-  <button onclick="login()">Masuk</button>
-  <p id="msg"></p>
-</div>
+<header class="top">
+  <h1>Agenda Harian</h1>
+  <input type="date" id="datePicker">
+</header>
 
-<script>
-function login() {
-  sessionStorage.clear();
-  const pass = document.getElementById("password").value;
+<section class="toolbar">
+  <button id="addBtn">+ Agenda</button>
+  <button id="exportBtn">Export</button>
 
-  if (pass === "Uky@2026!aman") {
-    sessionStorage.setItem("auth", "true");
-    window.location.href = "main.html";
-  } else {
-    document.getElementById("msg").innerText = "Password salah";
-  }
-}
-</script>
+  <input type="file" id="importInput" hidden>
+  <button id="importBtn">Import</button>
+</section>
 
+<main id="agendaContainer"></main>
+
+<script src="script.js"></script>
 </body>
 </html>
