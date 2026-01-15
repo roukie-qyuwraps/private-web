@@ -1,73 +1,106 @@
-const container = document.getElementById("agendaContainer");
 const datePicker = document.getElementById("datePicker");
+const container = document.getElementById("agendaContainer");
+const addBtn = document.getElementById("addBtn");
+const exportBtn = document.getElementById("exportBtn");
+const importBtn = document.getElementById("importBtn");
+const importInput = document.getElementById("importInput");
 
+// set tanggal hari ini
 datePicker.valueAsDate = new Date();
-loadAgenda();
 
-datePicker.addEventListener("change", loadAgenda);
-
-function getData() {
+// ---------- STORAGE ----------
+function getAllData() {
   return JSON.parse(localStorage.getItem("agendaData") || "{}");
 }
 
-function saveData(data) {
+function saveAllData(data) {
   localStorage.setItem("agendaData", JSON.stringify(data));
 }
 
+// ---------- LOAD ----------
 function loadAgenda() {
   container.innerHTML = "";
-  const data = getData();
-  const day = datePicker.value;
-  (data[day] || []).forEach(item => createAgenda(item));
+  const data = getAllData();
+  const date = datePicker.value;
+
+  if (!data[date]) return;
+
+  data[date].forEach(item => createBox(item));
 }
 
-function addAgenda(item = { title: "", notes: "" }) {
-  createAgenda(item);
-}
+// ---------- CREATE BOX ----------
+function createBox(item = { title: "", notes: "" }) {
+  const box = document.createElement("div");
+  box.className = "agenda-box";
 
-function createAgenda(item) {
-  const div = document.createElement("div");
-  div.className = "agenda";
+  box.innerHTML = `
+    <input placeholder="Judul agenda" value="${item.title}">
+    <textarea placeholder="Catatan / deskripsi panjang">${item.notes}</textarea>
 
-  div.innerHTML = `
-    <input placeholder="Judul" value="${item.title}">
-    <textarea placeholder="Catatan">${item.notes}</textarea>
-    <button>Simpan</button>
+    <div class="agenda-actions">
+      <button class="saveBtn">Simpan</button>
+      <button class="deleteBtn">Hapus</button>
+    </div>
   `;
 
-  div.querySelector("button").onclick = () => {
-    const data = getData();
-    const day = datePicker.value;
-    if (!data[day]) data[day] = [];
-
-    data[day].push({
-      title: div.querySelector("input").value,
-      notes: div.querySelector("textarea").value
-    });
-
-    saveData(data);
-    alert("Tersimpan");
-    loadAgenda();
+  box.querySelector(".saveBtn").onclick = () => {
+    saveBox(box);
   };
 
-  container.appendChild(div);
+  box.querySelector(".deleteBtn").onclick = () => {
+    box.remove();
+    saveCurrentDate();
+  };
+
+  container.appendChild(box);
 }
 
-/* EXPORT */
-function exportData() {
+// ---------- SAVE ----------
+function saveBox(box) {
+  saveCurrentDate();
+  alert("Agenda tersimpan");
+}
+
+function saveCurrentDate() {
+  const data = getAllData();
+  const date = datePicker.value;
+
+  data[date] = [];
+
+  container.querySelectorAll(".agenda-box").forEach(box => {
+    data[date].push({
+      title: box.querySelector("input").value,
+      notes: box.querySelector("textarea").value
+    });
+  });
+
+  saveAllData(data);
+}
+
+// ---------- EVENTS ----------
+addBtn.onclick = () => createBox();
+
+datePicker.onchange = loadAgenda;
+
+// ---------- EXPORT ----------
+exportBtn.onclick = () => {
   const data = localStorage.getItem("agendaData");
   if (!data) return alert("Tidak ada data");
 
   const blob = new Blob([data], { type: "application/json" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "agenda-backup.json";
-  a.click();
-}
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "agenda-backup.json";
+  link.click();
+};
 
-/* IMPORT */
-document.getElementById("importFile").addEventListener("change", e => {
+// ---------- IMPORT ----------
+importBtn.onclick = () => importInput.click();
+
+importInput.onchange = e => {
   const file = e.target.files[0];
+  if (!file) return;
+
   const reader = new FileReader();
   reader.onload = () => {
     localStorage.setItem("agendaData", reader.result);
@@ -75,4 +108,7 @@ document.getElementById("importFile").addEventListener("change", e => {
     alert("Data berhasil di-import");
   };
   reader.readAsText(file);
-});
+};
+
+// INIT
+loadAgenda();
