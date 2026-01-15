@@ -2,26 +2,29 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Agenda Harian</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agenda Pribadi</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header class="top">
-  <h1>Agenda Harian</h1>
-  <input type="date" id="datePicker">
-</header>
+  <div class="app">
+    <h1>Agenda Harian</h1>
 
-<section class="toolbar">
-  <button id="addBtn">+ Agenda</button>
-  <button id="exportBtn">Export</button>
+    <div class="card">
+      <label>Tanggal</label>
+      <input type="date" id="date" onchange="loadAgenda()">
 
-  <input type="file" id="importInput" hidden>
-  <button id="importBtn">Import</button>
-</section>
+      <label>Judul</label>
+      <input type="text" id="title" placeholder="Judul kegiatan">
 
-<main id="agendaContainer"></main>
+      <label>Catatan</label>
+      <textarea id="note" placeholder="Tulis catatan di sini..."></textarea>
 
-<script src="script.js"></script>
+      <button onclick="saveAgenda()">Simpan</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
